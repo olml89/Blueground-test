@@ -6,16 +6,23 @@ use App\Coin\Coin;
 
 abstract readonly class GenericProduct implements Product
 {
-    abstract protected function getPrice(): int;
+    public function __construct(
+        private ProductType $type,
+        private int $price,
+    ) {}
 
-    public function getPriceDifference(Coin ...$coins): int
+    public function is(ProductType $type): bool
     {
-        $providedCoinsValue = 0;
+        return $this->type === $type;
+    }
 
-        foreach ($coins as $coin) {
-            $providedCoinsValue += $coin->value;
-        }
+    public function type(): ProductType
+    {
+        return $this->type;
+    }
 
-        return $providedCoinsValue - $this->getPrice();
+    public function price(): int
+    {
+        return $this->price;
     }
 }

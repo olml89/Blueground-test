@@ -4,8 +4,11 @@ namespace App\Product;
 
 final readonly class Water extends GenericProduct
 {
-    public function getPrice(): int
+    public function __construct()
     {
-        return 25;
+        parent::__construct(
+            type: ProductType::Water,
+            price: 25,
+        );
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Product;
 
-use App\Coin\Coin;
-
 interface Product
 {
-    public function getPriceDifference(Coin ...$coins): int;
+    public function is(ProductType $type): bool;
+    public function type(): ProductType;
+    public function price(): int;
 }
