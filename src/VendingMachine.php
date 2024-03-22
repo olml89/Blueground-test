@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Coin\CoinBucket;
+use App\Coin\InvalidAmountForChangeException;
 use App\Coin\UndeliverableChangeException;
 use App\Product\ProductBucket;
 use App\Product\ProductNotAffordableException;
@@ -19,6 +20,7 @@ final readonly class VendingMachine
     /**
      * @throws ProductNotFoundException
      * @throws ProductNotAffordableException
+     * @throws InvalidAmountForChangeException
      * @throws UndeliverableChangeException
      */
     public function select(ProductType $type, CoinBucket $payment): SelectionResult
@@ -34,10 +36,6 @@ final readonly class VendingMachine
         }
 
         $this->coinBucket->addCoins($payment);
-
-        if ($priceDifference === 0) {
-            return new SelectionResult($product);
-        }
 
         return new SelectionResult(
             product: $product,

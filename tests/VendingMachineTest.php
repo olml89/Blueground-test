@@ -7,8 +7,6 @@ use App\Coin\CoinBucket;
 use App\Product\ProductBucket;
 use App\Product\ProductNotAffordableException;
 use App\Product\ProductType;
-use App\Product\Snack;
-use App\Product\Soda;
 use App\Product\Water;
 use App\VendingMachine;
 use PHPUnit\Framework\TestCase;
@@ -54,19 +52,7 @@ final class VendingMachineTest extends TestCase
         );
     }
 
-    public function testItReturnsAProductWithoutChangeIfThePaymentIsExact(): void
-    {
-        $payment = new CoinBucket(Coin::ten, Coin::ten, Coin::five);
-        $selectedProductType = ProductType::Water;
-
-        $selectionResult = $this->vendingMachine->select($selectedProductType, $payment);
-
-        $this->assertSame($this->waterProduct, $selectionResult->product);
-        $this->assertEquals(0, $selectionResult->change->value());
-        $this->assertEmpty($this->productBucket->products());
-    }
-
-    public function testItReturnsAProductWithChangeIfThePaymentIsHigherThanTheProductValue(): void
+    public function testItReturnsAProductWithChange(): void
     {
         $payment = new CoinBucket(Coin::ten, Coin::ten, Coin::ten);
         $selectedProductType = ProductType::Water;

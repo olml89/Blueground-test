@@ -9,6 +9,6 @@ final readonly class SelectionResult
 {
     public function __construct(
         public Product $product,
-        public CoinBucket $change = new CoinBucket(),
+        public CoinBucket $change,
     ) {}
 }

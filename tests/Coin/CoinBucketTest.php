@@ -4,7 +4,9 @@ namespace Tests\Coin;
 
 use App\Coin\Coin;
 use App\Coin\CoinBucket;
+use App\Coin\InvalidAmountForChangeException;
 use App\Coin\UndeliverableChangeException;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 final class CoinBucketTest extends TestCase
@@ -85,6 +87,31 @@ final class CoinBucketTest extends TestCase
         );
     }
 
+    public function testItThrowsInvalidAmountForChangeExceptionIfAmountIsNegative(): void
+    {
+        $coinBucket = new CoinBucket();
+        $invalidAmount = -1;
+
+        $this->expectExceptionObject(
+            new InvalidAmountForChangeException($invalidAmount)
+        );
+
+        $coinBucket->getChange($invalidAmount);
+    }
+
+    public function testItReturnsEmptyChangeIfAmountIsZero(): void
+    {
+        $coinBucket = new CoinBucket();
+        $amount = 0;
+
+        $change = $coinBucket->getChange($amount);
+
+        $this->assertSame(
+            [],
+            $change->coins()
+        );
+    }
+
     public function testItThrowsUndeliverableChangeExceptionIfAvailableCoinsCannotFormAnAmount(): void
     {
         $coinBucket = new CoinBucket(Coin::twentyfive, Coin::ten, Coin::five);
@@ -95,6 +122,15 @@ final class CoinBucketTest extends TestCase
         );
 
         $coinBucket->getChange($amount);
+
+        $this->assertSame(
+            [
+                Coin::twentyfive,
+                Coin::ten,
+                Coin::five,
+            ],
+            $coinBucket->coins()
+        );
     }
 
     public function testItReturnsChange(): void

@@ -60,11 +60,20 @@ final class CoinBucket
     }
 
     /**
+     * @throws InvalidAmountForChangeException
      * @throws UndeliverableChangeException
      */
     public function getChange(int $amount): self
     {
+        if ($amount < 0) {
+            throw new InvalidAmountForChangeException($amount);
+        }
+
         $change = new CoinBucket();
+
+        if ($amount === 0) {
+            return $change;
+        }
 
         foreach ($this->coins as $index => $coin) {
             if ($coin->value <= $amount) {
@@ -76,6 +85,7 @@ final class CoinBucket
         }
 
         if ($amount !== 0) {
+            // Add the coins collected for the change back to the bucket
             $this->addCoins($change);
 
             throw new UndeliverableChangeException($amount + $change->value());
