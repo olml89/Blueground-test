@@ -35,7 +35,7 @@ final readonly class VendingMachine
             throw new ProductNotAffordableException($product, $payment);
         }
 
-        $this->coinBucket->addCoins($payment);
+        $this->coinBucket->transfer($payment);
 
         return new SelectionResult(
             product: $product,

@@ -6,7 +6,6 @@ use App\Coin\Coin;
 use App\Coin\CoinBucket;
 use App\Coin\InvalidAmountForChangeException;
 use App\Coin\UndeliverableChangeException;
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 final class CoinBucketTest extends TestCase
@@ -29,32 +28,17 @@ final class CoinBucketTest extends TestCase
         );
     }
 
-    public function testItAddsACoinInCorrectOrder(): void
+    public function testItTransfersCoinsAndStoresThemInCorrectOrder(): void
     {
-        $coinBucket = new CoinBucket(...Coin::cases());
+        $destinationCoinBucket = new CoinBucket(...Coin::cases());
+        $sourceCoinBucket = new CoinBucket(...Coin::cases());
 
-        $coinBucket->addCoin(Coin::five);
+        $destinationCoinBucket->transfer($sourceCoinBucket);
 
         $this->assertSame(
-            [
-                Coin::twentyfive,
-                Coin::ten,
-                Coin::five,
-                Coin::five,
-                Coin::one,
-            ],
-            $coinBucket->coins()
+            [],
+            $sourceCoinBucket->coins()
         );
-    }
-
-    public function testItAddsACoinBucketInCorrectOrder(): void
-    {
-        $coinBucket = new CoinBucket(...Coin::cases());
-
-        $coinBucket->addCoins(
-            new CoinBucket(...Coin::cases())
-        );
-
         $this->assertSame(
             [
                 Coin::twentyfive,
@@ -66,7 +50,7 @@ final class CoinBucketTest extends TestCase
                 Coin::one,
                 Coin::one,
             ],
-            $coinBucket->coins()
+            $destinationCoinBucket->coins()
         );
     }
 

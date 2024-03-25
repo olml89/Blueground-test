@@ -17,20 +17,26 @@ final class CoinBucket
         $this->order();
     }
 
-    public function addCoins(CoinBucket $coins): void
+    public function transfer(CoinBucket $coins): void
     {
         foreach ($coins->coins() as $coin) {
             $this->coins[] = $coin;
         }
 
+        $coins->empty();
         $this->order();
     }
 
-    public function addCoin(Coin $coin): void
+    private function addCoin(Coin $coin): void
     {
         $this->coins[] = $coin;
 
         $this->order();
+    }
+
+    private function empty(): void
+    {
+        $this->coins = [];
     }
 
     private function order(): void
@@ -86,9 +92,10 @@ final class CoinBucket
 
         if ($amount !== 0) {
             // Add the coins collected for the change back to the bucket
-            $this->addCoins($change);
+            $amount += $change->value();
+            $this->transfer($change);
 
-            throw new UndeliverableChangeException($amount + $change->value());
+            throw new UndeliverableChangeException($amount);
         }
 
         return $change;

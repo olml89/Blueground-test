@@ -59,8 +59,19 @@ final class VendingMachineTest extends TestCase
 
         $selectionResult = $this->vendingMachine->select($selectedProductType, $payment);
 
-        $this->assertSame($this->waterProduct, $selectionResult->product);
-        $this->assertEquals(5, $selectionResult->change->value());
-        $this->assertEmpty($this->productBucket->products());
+        $this->assertEmpty(
+            $payment->coins()
+        );
+        $this->assertSame(
+            $this->waterProduct,
+            $selectionResult->product
+        );
+        $this->assertEquals(
+            5,
+            $selectionResult->change->value()
+        );
+        $this->assertEmpty(
+            $this->productBucket->products()
+        );
     }
 }
