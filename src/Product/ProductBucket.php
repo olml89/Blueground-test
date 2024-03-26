@@ -21,10 +21,6 @@ final class ProductBucket
     {
         foreach ($this->products as $index => $product) {
             if ($product->is($type)) {
-                // Unset the selected product and re-index
-                unset($this->products[$index]);
-                $this->products = array_values($this->products);
-
                 return $product;
             }
         }
