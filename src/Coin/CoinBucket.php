@@ -27,13 +27,6 @@ final class CoinBucket
         $this->order();
     }
 
-    private function addCoin(Coin $coin): void
-    {
-        $this->coins[] = $coin;
-
-        $this->order();
-    }
-
     private function empty(): void
     {
         $this->coins = [];
@@ -81,13 +74,9 @@ final class CoinBucket
             return $change;
         }
 
-        foreach ($this->coins as $index => $coin) {
-            if ($coin->value <= $amount) {
-                $change->addCoin($coin);
-                $amount -= $coin->value;
-
-                unset($this->coins[$index]);
-            }
+        while ($coin = $this->popHighestCoinLowerOrEqualThan($amount)) {
+            $change->addCoin($coin);
+            $amount -= $coin->value;
         }
 
         if ($amount !== 0) {
@@ -99,5 +88,31 @@ final class CoinBucket
         }
 
         return $change;
+    }
+
+    private function popHighestCoinLowerOrEqualThan(int $amount): ?Coin
+    {
+        if ($amount === 0) {
+            return null;
+        }
+
+        foreach ($this->coins as $index => $coin) {
+            if ($coin->value <= $amount) {
+                // Remove the coin from this bucket and re-order
+                unset($this->coins[$index]);
+                $this->order();
+
+                return $coin;
+            }
+        }
+
+        return null;
+    }
+
+    private function addCoin(Coin $coin): void
+    {
+        $this->coins[] = $coin;
+
+        $this->order();
     }
 }

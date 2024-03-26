@@ -14,11 +14,6 @@ final class ProductBucket
         $this->products = $products;
     }
 
-    public function add(Product $product): void
-    {
-        $this->products[] = $product;
-    }
-
     /**
      * @throws ProductNotFoundException
      */
@@ -35,6 +30,19 @@ final class ProductBucket
         }
 
         throw new ProductNotFoundException($type);
+    }
+
+    public function release(Product $selectedProduct): void
+    {
+        foreach ($this->products as $index => $product) {
+            if ($product === $selectedProduct) {
+                // Unset the selected product and re-index
+                unset($this->products[$index]);
+                $this->products = array_values($this->products);
+
+                return;
+            }
+        }
     }
 
     /**

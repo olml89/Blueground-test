@@ -30,15 +30,26 @@ final class ProductBucketTest extends TestCase
     public function testItReturnsAProductOfTheSelectedProductType(): void
     {
         $productBucket = new ProductBucket(
-            $soda = new Soda(),
+            new Soda(),
             new Snack(),
-            $water = new Water(),
+            new Water(),
         );
         $selectedProductType = ProductType::Snack;
 
         $product = $productBucket->select($selectedProductType);
 
         $this->assertInstanceOf(Snack::class, $product);
+    }
+
+    public function testItReleasesAProduct(): void
+    {
+        $productBucket = new ProductBucket(
+            $soda = new Soda(),
+            $snack = new Snack(),
+            $water = new Water(),
+        );
+
+        $productBucket->release($snack);
 
         $this->assertSame(
             [

@@ -23,23 +23,12 @@ final readonly class VendingMachine
      * @throws InvalidAmountForChangeException
      * @throws UndeliverableChangeException
      */
-    public function select(ProductType $type, CoinBucket $payment): SelectionResult
+    public function buy(ProductType $type, CoinBucket $payment): SelectionResult
     {
         $product = $this->productBucket->select($type);
-        $priceDifference = $payment->value() - $product->price();
+        $change = $product->buy($payment, $this->coinBucket);
+        $this->productBucket->release($product);
 
-        if ($priceDifference < 0) {
-            // Add the product back to the bucket
-            $this->productBucket->add($product);
-
-            throw new ProductNotAffordableException($product, $payment);
-        }
-
-        $this->coinBucket->transfer($payment);
-
-        return new SelectionResult(
-            product: $product,
-            change: $this->coinBucket->getChange($priceDifference)
-        );
+        return new SelectionResult($product, $change);
     }
 }
