@@ -56,7 +56,7 @@ class CoinBucket
         $this->coins = [];
     }
 
-    protected function order(): void
+    private function order(): void
     {
         usort(
             $this->coins,
