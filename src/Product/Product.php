@@ -2,8 +2,10 @@
 
 namespace App\Product;
 
+use App\Coin\ChangeBucket;
 use App\Coin\CoinBucket;
 use App\Coin\InvalidAmountForChangeException;
+use App\Coin\Payment;
 use App\Coin\UndeliverableChangeException;
 
 interface Product
@@ -20,5 +22,5 @@ interface Product
      * @throws InvalidAmountForChangeException
      * @throws UndeliverableChangeException
      */
-    public function buy(CoinBucket $payment, CoinBucket $changeBucket): CoinBucket;
+    public function buy(Payment $payment, ChangeBucket $changeBucket): CoinBucket;
 }

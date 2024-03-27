@@ -2,8 +2,9 @@
 
 namespace Tests\Product;
 
+use App\Coin\ChangeBucket;
 use App\Coin\Coin;
-use App\Coin\CoinBucket;
+use App\Coin\Payment;
 use App\Product\Water;
 use Override;
 
@@ -22,8 +23,8 @@ final class WaterTest extends GenericProductTestCase
     {
         $this->assertPaymentIsEmptiedAndChangeIsCorrect(
             product: new Water(),
-            payment: new CoinBucket(Coin::ten, Coin::ten, Coin::five),
-            changeBucket: new CoinBucket()
+            payment: new Payment(Coin::ten, Coin::ten, Coin::five),
+            changeBucket: new ChangeBucket()
         );
     }
 
@@ -32,8 +33,8 @@ final class WaterTest extends GenericProductTestCase
     {
         $this->assertPaymentIsEmptiedAndChangeIsCorrect(
             product: new Water(),
-            payment: new CoinBucket(Coin::ten, Coin::ten, Coin::ten),
-            changeBucket: new CoinBucket(Coin::five)
+            payment: new Payment(Coin::ten, Coin::ten, Coin::ten),
+            changeBucket: new ChangeBucket(Coin::five)
         );
     }
 }

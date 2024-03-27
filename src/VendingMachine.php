@@ -2,8 +2,9 @@
 
 namespace App;
 
-use App\Coin\CoinBucket;
+use App\Coin\ChangeBucket;
 use App\Coin\InvalidAmountForChangeException;
+use App\Coin\Payment;
 use App\Coin\UndeliverableChangeException;
 use App\Product\ProductBucket;
 use App\Product\ProductNotAffordableException;
@@ -14,7 +15,7 @@ final readonly class VendingMachine
 {
     public function __construct(
         private ProductBucket $productBucket,
-        private CoinBucket $coinBucket,
+        private ChangeBucket $changeBucket,
     ) {}
 
     /**
@@ -23,10 +24,10 @@ final readonly class VendingMachine
      * @throws InvalidAmountForChangeException
      * @throws UndeliverableChangeException
      */
-    public function buy(ProductType $type, CoinBucket $payment): SelectionResult
+    public function buy(ProductType $type, Payment $payment): SelectionResult
     {
         $product = $this->productBucket->select($type);
-        $change = $product->buy($payment, $this->coinBucket);
+        $change = $product->buy($payment, $this->changeBucket);
         $this->productBucket->release($product);
 
         return new SelectionResult($product, $change);

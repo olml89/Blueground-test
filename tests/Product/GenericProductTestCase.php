@@ -2,7 +2,9 @@
 
 namespace Tests\Product;
 
-use App\Coin\CoinBucket;
+use App\Coin\ChangeBucket;
+use App\Coin\Coin;
+use App\Coin\Payment;
 use App\Product\Product;
 use App\Product\ProductNotAffordableException;
 use PHPUnit\Framework\TestCase;
@@ -15,17 +17,16 @@ abstract class GenericProductTestCase extends TestCase
 
     protected function assertProductNotAffordableExceptionIsThrown(Product $product): void
     {
-        // Empty payment
-        $payment = new CoinBucket();
+        $payment = new Payment(Coin::one);
 
         $this->expectExceptionObject(
             new ProductNotAffordableException($product, $payment)
         );
 
-        $product->buy($payment, new CoinBucket());
+        $product->buy($payment, new ChangeBucket());
     }
 
-    protected function assertPaymentIsEmptiedAndChangeIsCorrect(Product $product, CoinBucket $payment, CoinBucket $changeBucket): void
+    protected function assertPaymentIsEmptiedAndChangeIsCorrect(Product $product, Payment $payment, ChangeBucket $changeBucket): void
     {
         $expectedChangeValue = $payment->value() - $product->price();
 

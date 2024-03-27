@@ -2,7 +2,7 @@
 
 namespace App\Coin;
 
-final class CoinBucket
+class CoinBucket
 {
     /**
      * Ordered from higher value coins to lower value coins
@@ -17,14 +17,38 @@ final class CoinBucket
         $this->order();
     }
 
-    public function transfer(CoinBucket $coins): void
+    public function transferTo(CoinBucket $destinationCoinBucket): void
     {
-        foreach ($coins->coins() as $coin) {
-            $this->coins[] = $coin;
+        foreach ($this->coins as $index => $coin) {
+            $destinationCoinBucket->addCoin($coin);
+            $this->removeCoin($index);
         }
 
-        $coins->empty();
+        $this->empty();
+        $destinationCoinBucket->order();
+    }
+
+    public function transferCoinTo(Coin $transferableCoin, CoinBucket $destinationCoinBucket): void
+    {
+        foreach ($this->coins as $index => $coin) {
+            if ($coin === $transferableCoin) {
+                $destinationCoinBucket->addCoin($coin);
+                $this->removeCoin($index);
+            }
+        }
+
         $this->order();
+        $destinationCoinBucket->order();
+    }
+
+    private function addCoin(Coin $coin): void
+    {
+        $this->coins[] = $coin;
+    }
+
+    private function removeCoin(int $index): void
+    {
+        unset($this->coins[$index]);
     }
 
     private function empty(): void
@@ -32,7 +56,7 @@ final class CoinBucket
         $this->coins = [];
     }
 
-    private function order(): void
+    protected function order(): void
     {
         usort(
             $this->coins,
@@ -56,63 +80,5 @@ final class CoinBucket
             fn (int $carry, Coin $coin): int => $carry + $coin->value,
             initial: 0,
         );
-    }
-
-    /**
-     * @throws InvalidAmountForChangeException
-     * @throws UndeliverableChangeException
-     */
-    public function getChange(int $amount): self
-    {
-        if ($amount < 0) {
-            throw new InvalidAmountForChangeException($amount);
-        }
-
-        $change = new CoinBucket();
-
-        if ($amount === 0) {
-            return $change;
-        }
-
-        while ($coin = $this->popHighestCoinLowerOrEqualThan($amount)) {
-            $change->addCoin($coin);
-            $amount -= $coin->value;
-        }
-
-        if ($amount !== 0) {
-            // Add the coins collected for the change back to the bucket
-            $amount += $change->value();
-            $this->transfer($change);
-
-            throw new UndeliverableChangeException($amount);
-        }
-
-        return $change;
-    }
-
-    private function popHighestCoinLowerOrEqualThan(int $amount): ?Coin
-    {
-        if ($amount === 0) {
-            return null;
-        }
-
-        foreach ($this->coins as $index => $coin) {
-            if ($coin->value <= $amount) {
-                // Remove the coin from this bucket and re-order
-                unset($this->coins[$index]);
-                $this->order();
-
-                return $coin;
-            }
-        }
-
-        return null;
-    }
-
-    private function addCoin(Coin $coin): void
-    {
-        $this->coins[] = $coin;
-
-        $this->order();
     }
 }

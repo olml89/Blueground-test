@@ -3,7 +3,8 @@
 namespace Tests;
 
 use App\Coin\Coin;
-use App\Coin\CoinBucket;
+use App\Coin\ChangeBucket;
+use App\Coin\Payment;
 use App\Product\ProductBucket;
 use App\Product\ProductType;
 use App\Product\Water;
@@ -19,10 +20,10 @@ final class VendingMachineTest extends TestCase
 
         $vendingMachine = new VendingMachine(
             productBucket: $productBucket,
-            coinBucket: new CoinBucket(...Coin::cases())
+            changeBucket: new ChangeBucket(...Coin::cases())
         );
 
-        $payment = new CoinBucket(Coin::ten, Coin::ten, Coin::ten);
+        $payment = new Payment(Coin::ten, Coin::ten, Coin::ten);
         $selectedProductType = ProductType::Water;
 
         $selectionResult = $vendingMachine->buy($selectedProductType, $payment);

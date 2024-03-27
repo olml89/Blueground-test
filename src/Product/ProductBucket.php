@@ -19,7 +19,7 @@ final class ProductBucket
      */
     public function select(ProductType $type): Product
     {
-        foreach ($this->products as $index => $product) {
+        foreach ($this->products as $product) {
             if ($product->is($type)) {
                 return $product;
             }

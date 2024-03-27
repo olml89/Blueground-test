@@ -4,8 +4,6 @@ namespace Tests\Coin;
 
 use App\Coin\Coin;
 use App\Coin\CoinBucket;
-use App\Coin\InvalidAmountForChangeException;
-use App\Coin\UndeliverableChangeException;
 use PHPUnit\Framework\TestCase;
 
 final class CoinBucketTest extends TestCase
@@ -28,27 +26,45 @@ final class CoinBucketTest extends TestCase
         );
     }
 
-    public function testItTransfersCoinsAndStoresThemInCorrectOrder(): void
+    public function testItTransfersToDestinationBucketAndOrdersIt(): void
     {
-        $destinationCoinBucket = new CoinBucket(...Coin::cases());
+        $destinationCoinBucket = new CoinBucket();
         $sourceCoinBucket = new CoinBucket(...Coin::cases());
 
-        $destinationCoinBucket->transfer($sourceCoinBucket);
+        $sourceCoinBucket->transferTo($destinationCoinBucket);
 
-        $this->assertSame(
-            [],
+        $this->assertEmpty(
             $sourceCoinBucket->coins()
         );
         $this->assertSame(
             [
                 Coin::twentyfive,
+                Coin::ten,
+                Coin::five,
+                Coin::one,
+            ],
+            $destinationCoinBucket->coins()
+        );
+    }
+
+    public function testItTransfersCoinToDestinationBucketAndOrdersIt(): void
+    {
+        $destinationCoinBucket = new CoinBucket();
+        $sourceCoinBucket = new CoinBucket(...Coin::cases());
+
+        $sourceCoinBucket->transferCoinTo(Coin::ten, $destinationCoinBucket);
+
+        $this->assertSame(
+            [
                 Coin::twentyfive,
-                Coin::ten,
-                Coin::ten,
-                Coin::five,
                 Coin::five,
                 Coin::one,
-                Coin::one,
+            ],
+            $sourceCoinBucket->coins()
+        );
+        $this->assertSame(
+            [
+                Coin::ten,
             ],
             $destinationCoinBucket->coins()
         );
@@ -68,76 +84,6 @@ final class CoinBucketTest extends TestCase
                 initial: 0,
             ),
             $value
-        );
-    }
-
-    public function testItThrowsInvalidAmountForChangeExceptionIfAmountIsNegative(): void
-    {
-        $coinBucket = new CoinBucket();
-        $invalidAmount = -1;
-
-        $this->expectExceptionObject(
-            new InvalidAmountForChangeException($invalidAmount)
-        );
-
-        $coinBucket->getChange($invalidAmount);
-    }
-
-    public function testItReturnsEmptyChangeIfAmountIsZero(): void
-    {
-        $coinBucket = new CoinBucket();
-        $amount = 0;
-
-        $change = $coinBucket->getChange($amount);
-
-        $this->assertSame(
-            [],
-            $change->coins()
-        );
-    }
-
-    public function testItThrowsUndeliverableChangeExceptionIfAvailableCoinsCannotFormAnAmount(): void
-    {
-        $coinBucket = new CoinBucket(Coin::twentyfive, Coin::ten, Coin::five);
-        $amount = 6;
-
-        $this->expectExceptionObject(
-            new UndeliverableChangeException($amount)
-        );
-
-        $coinBucket->getChange($amount);
-
-        $this->assertSame(
-            [
-                Coin::twentyfive,
-                Coin::ten,
-                Coin::five,
-            ],
-            $coinBucket->coins()
-        );
-    }
-
-    public function testItReturnsChange(): void
-    {
-        $coinBucket = new CoinBucket(Coin::twentyfive, Coin::ten, Coin::five, Coin::one);
-        $amount = 6;
-
-        $change = $coinBucket->getChange($amount);
-
-        $this->assertSame(
-            [
-                Coin::five,
-                Coin::one,
-            ],
-            $change->coins()
-        );
-
-        $this->assertSame(
-            [
-                Coin::twentyfive,
-                Coin::ten,
-            ],
-            $coinBucket->coins()
         );
     }
 }

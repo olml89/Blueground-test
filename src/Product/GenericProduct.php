@@ -2,8 +2,10 @@
 
 namespace App\Product;
 
+use App\Coin\ChangeBucket;
 use App\Coin\CoinBucket;
 use App\Coin\InvalidAmountForChangeException;
+use App\Coin\Payment;
 use App\Coin\UndeliverableChangeException;
 
 abstract readonly class GenericProduct implements Product
@@ -33,7 +35,7 @@ abstract readonly class GenericProduct implements Product
      * @throws InvalidAmountForChangeException
      * @throws UndeliverableChangeException
      */
-    public function buy(CoinBucket $payment, CoinBucket $changeBucket): CoinBucket
+    public function buy(Payment $payment, ChangeBucket $changeBucket): CoinBucket
     {
         $priceDifference = $payment->value() - $this->price();
 
@@ -41,8 +43,6 @@ abstract readonly class GenericProduct implements Product
             throw new ProductNotAffordableException($this, $payment);
         }
 
-        $changeBucket->transfer($payment);
-
-        return $changeBucket->getChange($priceDifference);
+        return $changeBucket->getChange($payment, $priceDifference);
     }
 }

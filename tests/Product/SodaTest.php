@@ -2,8 +2,9 @@
 
 namespace Tests\Product;
 
+use App\Coin\ChangeBucket;
 use App\Coin\Coin;
-use App\Coin\CoinBucket;
+use App\Coin\Payment;
 use App\Product\Soda;
 use Override;
 
@@ -22,8 +23,8 @@ final class SodaTest extends GenericProductTestCase
     {
         $this->assertPaymentIsEmptiedAndChangeIsCorrect(
             product: new Soda(),
-            payment: new CoinBucket(Coin::twentyfive, Coin::ten),
-            changeBucket: new CoinBucket()
+            payment: new Payment(Coin::twentyfive, Coin::ten),
+            changeBucket: new ChangeBucket()
         );
     }
 
@@ -32,8 +33,8 @@ final class SodaTest extends GenericProductTestCase
     {
         $this->assertPaymentIsEmptiedAndChangeIsCorrect(
             product: new Soda(),
-            payment: new CoinBucket(Coin::twentyfive, Coin::twentyfive),
-            changeBucket: new CoinBucket(Coin::ten, Coin::five)
+            payment: new Payment(Coin::twentyfive, Coin::twentyfive),
+            changeBucket: new ChangeBucket(Coin::ten, Coin::five)
         );
     }
 }
